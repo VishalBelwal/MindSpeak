@@ -101,7 +101,7 @@ export default function SignupPage() {
 
   return (
     <>
-      <div className="flex justify-center items-center bg-slate-900 h-screen w-screen absolute overflow-hidden rounded-lg">
+      <div className="flex justify-center items-center bg-slate-900 h-screen w-screen absolute overflow-hidden ">
         <div className="w-full max-w-md p-8 space-y-8 bg-[#e7d9b2] rounded-lg shadow-lg z-10">
           <div className="text-center">
             <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-4">
