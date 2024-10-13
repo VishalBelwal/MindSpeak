@@ -43,7 +43,7 @@ export async function GET(request: Request) {
 
         return Response.json({
             success: true,
-            message: "Username Avialable"
+            message: "Username's Unique"
         }, { status: 200 })
 
     } catch (error) {
