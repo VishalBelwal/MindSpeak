@@ -54,17 +54,16 @@ export async function GET(request: Request) {
     await dbConnect()
     const session = await getServerSession(authOptions)
 
-    const user: User = session?.user as User
-    if (!session || !session.user) {
+    const user = session?.user
+    if (!session || !user) {
         return Response.json({
             success: false,
             message: "User Not Authenticated"
         }, { status: 401 })
     }
-
-    const userID = user._id
+ 
     try {
-        const foundUser = await userModel.findById(userID)
+        const foundUser = await userModel.findById(user._id)
 
         if (!foundUser) {
             return Response.json({
