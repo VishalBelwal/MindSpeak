@@ -33,7 +33,7 @@ function VerifyAccount() {
   //fetching data after submiting
   const onSubmit = async (data: z.infer<typeof verifySchema>) => {
     try {
-      const response = await axios.post(`/api/verify`, {
+      const response = await axios.post(`/api/verify-otp`, {
         userName: paramsData.userName,
         otp: data.code,
       });
