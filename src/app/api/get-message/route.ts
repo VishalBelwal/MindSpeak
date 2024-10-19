@@ -27,12 +27,13 @@ export async function GET(request: Request) {
 
     console.log(user)
 
-    if (!user || user.length === 0) {
-      return Response.json(
-        { message: 'User not found', success: false },
-        { status: 404 }
-      );
-    }
+    //have to comment all this code because it is disturbing the frontend flow
+    // if (!user || user.length === 0) {
+    //   return Response.json(
+    //     { message: 'User not found', success: false },
+    //     { status: 404 }
+    //   );
+    // }
 
     return Response.json(
       { messages: user[0].messages },
@@ -42,9 +43,10 @@ export async function GET(request: Request) {
     );
   } catch (error) {
     console.error('An unexpected error occurred:', error);
-    return Response.json(
-      { message: 'Internal server error', success: false },
-      { status: 500 }
-    );
+    //have to ommentall this code because it is disturbing the frontend flow
+    // return Response.json(
+    //   { message: 'Internal server error', success: false },
+    //   { status: 500 }
+    // );
   }
 }
