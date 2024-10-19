@@ -8,12 +8,12 @@ export async function sendVerifyEmail(
     otp: string
 ): Promise<ApiResponse>{
     try {
-        const reponse = await resend.emails.send({
+        const reponse = await resend.batch.send([{
             from: 'Acme <MindSpeak@resend.dev>',
             to: email,
             subject: "MindSpeak Verification Email",
             react: VerificationEmail({username: userName, otp: otp})
-        })
+        }])
 
         console.log("Resend API Response:", reponse);
 
