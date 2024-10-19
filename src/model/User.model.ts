@@ -1,6 +1,6 @@
-import mongoose , {Schema, Document} from "mongoose"
+import mongoose, { Schema, Document } from "mongoose"
 
-export interface Message extends Document{
+export interface Message extends Document {
     content: string;
     createdAt: Date;
 }
@@ -17,7 +17,7 @@ const MessageSchema: Schema<Message> = new Schema({
     }
 })
 
-export interface User extends Document{
+export interface User extends Document {
     userName: string;
     email: string;
     password: string;
@@ -38,7 +38,7 @@ const UserSchema: Schema<User> = new Schema({
     },
     email: {
         type: String,
-        required:[true, "email is required"],
+        required: [true, "email is required"],
         unique: true,
         lowercase: true,
         match: [/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/g, 'please use a valid email address']
@@ -62,7 +62,7 @@ const UserSchema: Schema<User> = new Schema({
     isAcceptingMessages: {
         type: Boolean,
         default: true
-    }, 
+    },
     messages: [MessageSchema]
 })
 
