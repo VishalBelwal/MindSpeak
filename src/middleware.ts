@@ -1,28 +1,30 @@
-import { getToken } from 'next-auth/jwt'
-import { NextRequest, NextResponse } from 'next/server'
-export { default } from "next-auth/middleware"
+import { NextRequest, NextResponse } from 'next/server';
+import { getToken } from 'next-auth/jwt';
+export { default } from 'next-auth/middleware';
 
-// This function can be marked `async` if using `await` inside
-export async function middleware(request: NextRequest) {
-
-  const token = await getToken({ req: request })
-  const url = request.nextUrl
-
-  // to check ki token hai to kha kha ja sakte hai and agar nahi hai to kha kha jaa sakte hai
-  if (token && (
-    url.pathname.startsWith('/sign-in') ||
-    url.pathname.startsWith('/sign-up') ||
-    url.pathname.startsWith('/verify') ||
-    url.pathname.startsWith('/')
-  )
-  ) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
-  }
-
-  // return NextResponse.redirect(new URL('/home', request.url))
-}
-
-// wo file ki kha kha par ham chahate hai  ki middleware run kare
 export const config = {
   matcher: ['/dashboard/:path*', '/sign-in', '/sign-up', '/', '/verify/:path*'],
+};
+
+export async function middleware(request: NextRequest) {
+  const token = await getToken({ req: request });
+  const url = request.nextUrl;
+
+  // Redirect to dashboard if the user is already authenticated
+  // and trying to access sign-in, sign-up, or home page
+  if (
+    token &&
+    (url.pathname.startsWith('/sign-in') ||
+      url.pathname.startsWith('/sign-up') ||
+      url.pathname.startsWith('/verify') ||
+      url.pathname === '/')
+  ) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
+  if (!token && url.pathname.startsWith('/dashboard')) {
+    return NextResponse.redirect(new URL('/sign-in', request.url));
+  }
+
+  return NextResponse.next();
 }
