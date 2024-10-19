@@ -9,10 +9,10 @@ export const authOptions: NextAuthOptions = {
         //its a method gives access to objects 
         CredentialsProvider({
             id: "credentials",
-            name: "credentials",
+            name: "Credentials",
             credentials:{
-                email: { label: "Email", type: "text", placeholder: "name example"},
-                password: { label: "password", type: "password", placeholder: "enter password" }
+                email: { label: "Email", type: "text"},
+                password: { label: "password", type: "password", }
             },
             async authorize(credentials: any): Promise<any>{
                 await dbConnect()
@@ -20,7 +20,7 @@ export const authOptions: NextAuthOptions = {
                 try {
                     //finding user
                     const user = await userModel.findOne({
-                        $or: [{email: credentials.identifier.email},{userName: credentials.identifier}]
+                        $or: [{email: credentials.identifier},{userName: credentials.identifier}]
                     })   //expected, user receivedPO
 
                     //but if not received then 
