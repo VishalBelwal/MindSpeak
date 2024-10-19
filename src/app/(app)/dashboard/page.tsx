@@ -79,12 +79,13 @@ function Dashboard() {
         }
       } catch (error) {
         const axiosError = error as AxiosError<ApiResponse>;
-        const message = axiosError.response?.data?.message ?? "Failed to fetch message ";
-        toast({
-          title: "Error",
-          description: message,
-          variant: "destructive",
-        });
+        //have to ommentall this code because it is disturbing the frontend flow
+        // const message = axiosError.response?.data?.message ?? "Failed to fetch message ";
+        // toast({
+        //   title: "Error",
+        //   description: message,
+        //   variant: "destructive",
+        // });
 
       } finally {
         setIsLoading(false);
