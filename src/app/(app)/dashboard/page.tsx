@@ -37,7 +37,6 @@ function Dashboard() {
     resolver: zodResolver(acceptMessagesSchema),
   });
 
-  // console.log(form);
 
   const { register, watch, setValue } = form;
 
@@ -133,7 +132,7 @@ function Dashboard() {
   const { userName } = session?.user as User;
   //constructing hostURL
   const hostURL = `${window.location.protocol}//${window.location.host}`;
-  const profileURL = `${hostURL}/dash/${userName}`;
+  const profileURL = `${hostURL}/u/${userName}`;
 
   const copyToClipboard = () => {
     //can be easily accessible because we are in client component we can get it easily can't get these in server component

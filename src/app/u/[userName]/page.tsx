@@ -28,6 +28,10 @@ import { messageSchema } from "@/schemas/messageSchema";
 const specialChar = "||";
 
 const parseStringMessages = (messageString: string): string[] => {
+  if (!messageString || !messageString.includes(specialChar)) {
+    console.warn("No separator found or empty message string.");
+    return ["Oops! No suggested messages available."];
+  }
   return messageString.split(specialChar);
 };
 
@@ -35,8 +39,7 @@ const initialMessageString =
   "What's your favorite movie?||Do you have any pets?||What's your dream job?";
 
 export default function SendMessage() {
-  const params = useParams<{ username: string }>();
-  const username = params.username;
+  const { username } = useParams();
 
   const {
     complete,
@@ -54,11 +57,11 @@ export default function SendMessage() {
 
   const messageContent = form.watch("content");
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleMessageClick = (message: string) => {
     form.setValue("content", message);
   };
-
-  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (data: z.infer<typeof messageSchema>) => {
     setIsLoading(true);
@@ -68,11 +71,10 @@ export default function SendMessage() {
         username,
       });
 
-      toast({
-        title: response.data.message,
-        variant: "default",
-      });
-      form.reset({ ...form.getValues(), content: "" });
+      if (response.status === 200) {
+        toast({ title: response.data.message, variant: "default" });
+        form.reset({ content: "" });
+      }
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       toast({
@@ -88,10 +90,13 @@ export default function SendMessage() {
 
   const fetchSuggestedMessages = async () => {
     try {
-      complete("");
+      await complete("suggested some message");
     } catch (error) {
       console.error("Error fetching messages:", error);
-      // Handle error appropriately
+      return Response.json(
+        { message: 'Internal server error', success: false },
+        { status: 500 }
+      );
     }
   };
 
@@ -132,7 +137,7 @@ export default function SendMessage() {
               <Button
                 type="submit"
                 className="bg-black text-white border cursor-pointer hover:scale-105 transition-all duration-200 ease-in-out"
-                disabled={isLoading || !messageContent}
+                disabled={isLoading || !messageContent?.trim()}
               >
                 Send it
               </Button>
@@ -159,7 +164,7 @@ export default function SendMessage() {
           <CardContent className="flex flex-col space-y-4">
             {error ? (
               <p className="text-red-500">{error.message}</p>
-            ) : (
+            ) : completion && completion.includes(specialChar) ? (
               parseStringMessages(completion).map((message, index) => (
                 <Button
                   key={index}
@@ -172,6 +177,8 @@ export default function SendMessage() {
                   </span>
                 </Button>
               ))
+            ) : (
+              <p className="text-gray-500">No suggested messages available.</p>
             )}
           </CardContent>
         </Card>
