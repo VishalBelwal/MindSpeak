@@ -30,24 +30,31 @@ export async function POST(request: Request) {
 
         const existingUserbyEmail = await userModel.findOne({ email })
 
-        const verifyCode = Math.floor(100000 + Math.random() * 900000).toString()
+        // const verifyCode = Math.floor(100000 + Math.random() * 900000).toString()
 
         if (existingUserbyEmail) {
-            if (existingUserbyEmail.isVerified) {
-                return Response.json({
+            return Response.json(
+                {
                     success: false,
-                    message: "User already exist with this email"
-                }, { status: 400 })
-            } else {
-                //if user changing password
-                const hashedPassword = await bcrypt.hash(password, 10)
-                existingUserbyEmail.password = hashedPassword
-                existingUserbyEmail.verifyCode = verifyCode
-                existingUserbyEmail.verifyCodeExpiry = new Date(Date.now() + 3600000)
+                    message: 'Email is already registered',
+                },
+                { status: 400 }
+            );
+            // if (existingUserbyEmail.isVerified) {
+            //     return Response.json({
+            //         success: false,
+            //         message: "User already exist with this email"
+            //     }, { status: 400 })
+            // } else {
+            //     //if user changing password
+            //     const hashedPassword = await bcrypt.hash(password, 10)
+            //     existingUserbyEmail.password = hashedPassword
+            //     existingUserbyEmail.verifyCode = verifyCode
+            //     existingUserbyEmail.verifyCodeExpiry = new Date(Date.now() + 3600000)
 
-                //saving user
-                await existingUserbyEmail.save()
-            }
+            //     //saving user
+            //     await existingUserbyEmail.save()
+            // }
         } else {
             const hashpassword = await bcrypt.hash(password, 10)
             const expiryDate = new Date()   //yaha par date hame as an object mil rahi hai aur uspar const, let etc ka koi effect nahi hota
@@ -58,8 +65,8 @@ export async function POST(request: Request) {
                 userName,
                 email,
                 password: hashpassword,
-                verifyCode,
-                verifyCodeExpiry: expiryDate,
+                // verifyCode,
+                // verifyCodeExpiry: expiryDate,
                 messages: []
             })
 
@@ -69,18 +76,18 @@ export async function POST(request: Request) {
         }
 
         //sending verification email
-        const emailResponse = await sendVerifyEmail(email, userName, verifyCode)
+        // const emailResponse = await sendVerifyEmail(email, userName, verifyCode)
 
-        if (!emailResponse.success) {
-            return Response.json({
-                success: false,
-                message: emailResponse.message
-            }, { status: 500 })
-        }
+        // if (!emailResponse.success) {
+        //     return Response.json({
+        //         success: false,
+        //         message: emailResponse.message
+        //     }, { status: 500 })
+        // }
 
         return Response.json({
             success: true,
-            message: "User registered successfully, please verify your email, Redirecting to Sign In page.",
+            message: "User registered successfully, Redirecting to Sign In page.",
             redirectUrl: '/sign-in'
         }, { status: 201 })
 

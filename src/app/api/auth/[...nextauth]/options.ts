@@ -12,7 +12,7 @@ export const authOptions: NextAuthOptions = {
             name: "Credentials",
             credentials:{
                 email: { label: "Email", type: "text"},
-                password: { label: "password", type: "password", }
+                password: { label: "Password", type: "password", }
             },
             async authorize(credentials: any): Promise<any>{
                 await dbConnect()
@@ -29,9 +29,9 @@ export const authOptions: NextAuthOptions = {
                     }
 
                     //checking if user is verified or not
-                    if(!user.isVerified){
-                        throw new Error("Please verify your account first")
-                    }
+                    // if(!user.isVerified){
+                    //     throw new Error("Please verify your account first")
+                    // }
 
                     //checking password
                     const isPasswordCorrect =  await bcrypt.compare(credentials.password, user.password)
@@ -51,7 +51,7 @@ export const authOptions: NextAuthOptions = {
         async session({session, token}){
             if(token){
                 session.user._id = token._id
-                session.user.isVerified = token.isVerified
+                // session.user.isVerified = token.isVerified
                 session.user.isAcceptingMessages = token.isAcceptingMessages
                 session.user.userName = token.userName
             }
@@ -60,7 +60,7 @@ export const authOptions: NextAuthOptions = {
         async jwt({token, user}){
             if(user){
                 token._id = user._id?.toString()   //convering object id to string
-                token.isVerified = user.isVerified
+                // token.isVerified = user.isVerified
                 token.isAcceptingMessages = user.isAcceptingMessages
                 token.userName = user.userName
             }
