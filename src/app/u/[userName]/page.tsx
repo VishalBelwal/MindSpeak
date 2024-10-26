@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import React, { useState } from "react";
 import axios, { AxiosError } from "axios";
@@ -8,7 +8,7 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { CardHeader, CardContent, Card } from "@/components/ui/card";
-import { useCompletion } from "ai/react";
+import { useCompletion } from 'ai/react';
 import {
   Form,
   FormControl,
@@ -25,56 +25,62 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { messageSchema } from "@/schemas/messageSchema";
 
+// Separator used for splitting the AI response
 const specialChar = "||";
 
+// Parse the string to split AI response based on "||" separator
 const parseStringMessages = (messageString: string): string[] => {
   if (!messageString || !messageString.includes(specialChar)) {
-    console.warn("No separator found or empty message string.");
-    return ["Oops! No suggested messages available."];
+    console.warn("No separator found in the AI response.");
+    return ["Oops! No suggested messages available."]; // Fallback message
   }
-  return messageString.split(specialChar);
+  return messageString.split(specialChar).filter(Boolean); // Ensure no empty entries
 };
 
+// Initial message string (could be a default value)
 const initialMessageString =
   "What's your favorite movie?||Do you have any pets?||What's your dream job?";
 
 export default function SendMessage() {
-  const { username } = useParams();
+  const param = useParams<{ userName: string }>();
+  const userName = param.userName;
+  const [isLoading, setIsLoading] = useState(false);
 
+  // AI Completion using the useCompletion hook
   const {
     complete,
     completion,
     isLoading: isSuggestLoading,
-    error,
+    error
   } = useCompletion({
-    api: "/api/suggest-messages",
+    api: '/api/suggest-messages', // Call to backend API
     initialCompletion: initialMessageString,
   });
 
+  // Hook form for handling form submission
   const form = useForm<z.infer<typeof messageSchema>>({
     resolver: zodResolver(messageSchema),
   });
 
+  // Watch form content for updates
   const messageContent = form.watch("content");
 
-  const [isLoading, setIsLoading] = useState(false);
-
+  // Handle the message click from the suggestions
   const handleMessageClick = (message: string) => {
     form.setValue("content", message);
   };
 
+  // Handle form submission
   const onSubmit = async (data: z.infer<typeof messageSchema>) => {
     setIsLoading(true);
     try {
-      const response = await axios.post<ApiResponse>("/api/send-message", {
+      await axios.post<ApiResponse>("/api/send-message", {
         ...data,
-        username,
+        userName,
       });
 
-      if (response.status === 200) {
-        toast({ title: response.data.message, variant: "default" });
-        form.reset({ content: "" });
-      }
+      toast({ title: "Message Sent Successfully", variant: "default" });
+      form.reset({ ...form.getValues(), content: "" });
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       toast({
@@ -88,15 +94,17 @@ export default function SendMessage() {
     }
   };
 
+  // Fetch suggested messages using AI
   const fetchSuggestedMessages = async () => {
     try {
-      await complete("suggested some message");
+      await complete(''); // Trigger the useCompletion API call
     } catch (error) {
       console.error("Error fetching messages:", error);
-      return Response.json(
-        { message: 'Internal server error', success: false },
-        { status: 500 }
-      );
+      toast({
+        title: "Error",
+        description: "Unable to fetch suggested messages. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -112,7 +120,7 @@ export default function SendMessage() {
             name="content"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Message to @{username}</FormLabel>
+                <FormLabel>Message to @{userName}</FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder="Type your anonymous message here..."
@@ -137,7 +145,7 @@ export default function SendMessage() {
               <Button
                 type="submit"
                 className="bg-black text-white border cursor-pointer hover:scale-105 transition-all duration-200 ease-in-out"
-                disabled={isLoading || !messageContent?.trim()}
+                disabled={isLoading || !messageContent}
               >
                 Send it
               </Button>
@@ -162,24 +170,24 @@ export default function SendMessage() {
             <h3 className="text-xl font-semibold">Suggested Messages</h3>
           </CardHeader>
           <CardContent className="flex flex-col space-y-4">
-            {error ? (
-              <p className="text-red-500">{error.message}</p>
-            ) : completion && completion.includes(specialChar) ? (
-              parseStringMessages(completion).map((message, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  className="mb-2 border-[#2C3639] text-[#2C3639] hover:bg-[#2C3639] hover:text-white transition duration-200 text-left w-full truncate"
-                  onClick={() => handleMessageClick(message)}
-                >
-                  <span className="overflow-hidden whitespace-nowrap overflow-ellipsis">
-                    {message}
-                  </span>
-                </Button>
-              ))
-            ) : (
-              <p className="text-gray-500">No suggested messages available.</p>
-            )}
+            {
+              error ? (
+                <p className="text-red-500">{error.message}</p>
+              ) : (
+                parseStringMessages(completion).map((message, index) => (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    className="mb-2 border-[#2C3639] text-[#2C3639] hover:bg-[#2C3639] hover:text-white transition duration-200 text-left w-full truncate"
+                    onClick={() => handleMessageClick(message)}
+                  >
+                    <span className="overflow-hidden whitespace-nowrap overflow-ellipsis">
+                      {message}
+                    </span>
+                  </Button>
+                ))
+              )
+            }
           </CardContent>
         </Card>
       </div>
