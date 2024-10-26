@@ -31,7 +31,7 @@ const HomePage = () => {
   ];
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col min-h-screen">
       <Navbar />
       <BackgroundBeamsWithCollision className="flex-grow">
         <div className="flex-grow flex flex-col items-center justify-center px-4 md:px-24 py-48 bg-[#242424] text-slate-500">
