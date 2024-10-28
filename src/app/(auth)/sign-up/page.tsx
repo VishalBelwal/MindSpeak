@@ -83,7 +83,9 @@ export default function SignupPage() {
         description: response.data.message,
         variant: "default",
       });
-      router.replace(`/verify/${userName}`);
+      // router.replace(`/verify/${userName}`);
+      router.replace(`/sign-in`);
+      setisSubmitted(false)
     } catch (error) {
       console.error("Error in signup of user", error);
       const axioserror = error as AxiosError<ApiResponse>;
@@ -96,7 +98,7 @@ export default function SignupPage() {
     } finally {
       setisSubmitted(false);
     }
-    console.log(data);
+    // console.log(data);
   };
 
   return (

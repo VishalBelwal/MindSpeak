@@ -68,7 +68,7 @@ function SigninPage() {
   ];
 
   return (
-    <div className="h-screen w-full rounded-md bg-neutral-950 relative flex flex-col items-center justify-center antialiased">
+    <div className="h-screen w-full bg-neutral-950 relative flex flex-col items-center justify-center antialiased">
       <div className="flex justify-center items-center text-white z-10">
         <div className="w-full max-w-lg p-2 space-y-8 ">
           <div className="text-center">
